@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.18.xsd">
+
+    <!-- Customer table -->
+    <changeSet id="v2-001-create-customer" author="Ibrahim">
+        <createTable tableName="customer">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(500)"/>
+            <column name="latitude" type="DECIMAL(9,6)"/>
+            <column name="longitude" type="DECIMAL(9,6)"/>
+            <column name="preferred_time_slot" type="VARCHAR(11)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="customer"/>
+        </rollback>
+    </changeSet>
+
+    <!-- DeliveryHistory table -->
+    <changeSet id="v2-002-create-delivery-history" author="Ibrahim">
+        <createTable tableName="delivery_history">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_deliveryhistory_customer"
+                             references="customer(id)"/>
+            </column>
+            <column name="tour_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_deliveryhistory_tour"
+                             references="tours(id)"/>
+            </column>
+            <column name="delivery_date" type="DATE"/>
+            <column name="planned_time" type="TIMESTAMP"/>
+            <column name="actual_time" type="TIMESTAMP"/>
+            <column name="delay_minutes" type="INT"/>
+            <column name="day_of_week" type="VARCHAR(10)"/>
+        </createTable>
+
+        <!-- Indexes for performance -->
+        <createIndex indexName="idx_deliveryhistory_customer" tableName="delivery_history">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_deliveryhistory_tour" tableName="delivery_history">
+            <column name="tour_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="delivery_history"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
