@@ -17,12 +17,9 @@
             </column>
             <column name="altitude" type="DOUBLE"/>
             <column name="longitude" type="DOUBLE"/>
-            <column name="open_time" type="TIME"/>
-            <column name="close_time" type="TIME"/>
+            <column name="openTime" type="TIME"/>
+            <column name="closeTime" type="TIME"/>
         </createTable>
-        <rollback>
-            <dropTable tableName="warehouses"/>
-        </rollback>
     </changeSet>
 
     <!-- Vehicle table -->
@@ -35,13 +32,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="VARCHAR(20)"/>
-            <column name="max_weight" type="DOUBLE"/>
-            <column name="max_volume" type="DOUBLE"/>
-            <column name="max_deliveries" type="INT"/>
+            <column name="maxWeight" type="DOUBLE"/>
+            <column name="maxVolume" type="DOUBLE"/>
+            <column name="maxDeliveries" type="INT"/>
         </createTable>
-        <rollback>
-            <dropTable tableName="vehicles"/>
-        </rollback>
     </changeSet>
 
     <!-- Tour table -->
@@ -50,7 +44,7 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="total_distance" type="DOUBLE"/>
+            <column name="totalDistance" type="DOUBLE"/>
             <column name="date" type="DATE"/>
             <column name="status" type="VARCHAR(20)">
                 <constraints nullable="false"/>
@@ -65,10 +59,6 @@
         <addForeignKeyConstraint baseTableName="tours" baseColumnNames="warehouse_id"
                                  referencedTableName="warehouses" referencedColumnNames="id"
                                  constraintName="fk_tour_warehouse"/>
-
-        <rollback>
-            <dropTable tableName="tours"/>
-        </rollback>
     </changeSet>
 
     <!-- Delivery table -->
@@ -79,22 +69,18 @@
             </column>
             <column name="altitude" type="DOUBLE"/>
             <column name="longitude" type="DOUBLE"/>
-            <column name="max_weight" type="DOUBLE"/>
-            <column name="max_volume" type="DOUBLE"/>
+            <column name="maxWeight" type="DOUBLE"/>
+            <column name="maxVolume" type="DOUBLE"/>
             <column name="status" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="time_slot" type="VARCHAR(11)"/>
+            <column name="timeSlot" type="VARCHAR(11)"/>
             <column name="tour_id" type="BIGINT"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="deliveries" baseColumnNames="tour_id"
                                  referencedTableName="tours" referencedColumnNames="id"
                                  constraintName="fk_delivery_tour"/>
-
-        <rollback>
-            <dropTable tableName="deliveries"/>
-        </rollback>
     </changeSet>
 
 </databaseChangeLog>
