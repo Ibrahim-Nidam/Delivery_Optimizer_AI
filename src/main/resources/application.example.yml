@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: Delivery Optimizer AI
+
+  profiles:
+    active: dev
+
+  logging:
+    level:
+      org.hibernate.SQL: debug
+      org.springframework.web: info
+    file:
+      name: logs/delivery-optimizer.log
+
+server:
+  port: 8081
+
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.xml
+  enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /openapi.yaml
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+ai:
+  enabled: true
+  optimizer:
+    provider: local
