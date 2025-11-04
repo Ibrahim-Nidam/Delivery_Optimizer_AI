@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.18.xsd">
+
+    <!-- Warehouse table -->
+    <changeSet id="v1-001-create-warehouse" author="Ibrahim">
+        <createTable tableName="warehouses">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="altitude" type="DOUBLE"/>
+            <column name="longitude" type="DOUBLE"/>
+            <column name="open_time" type="TIME"/>
+            <column name="close_time" type="TIME"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="warehouses"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Vehicle table -->
+    <changeSet id="v1-002-create-vehicle" author="Ibrahim">
+        <createTable tableName="vehicles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(20)"/>
+            <column name="max_weight" type="DOUBLE"/>
+            <column name="max_volume" type="DOUBLE"/>
+            <column name="max_deliveries" type="INT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="vehicles"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Tour table -->
+    <changeSet id="v1-003-create-tour" author="Ibrahim">
+        <createTable tableName="tours">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="total_distance" type="DOUBLE"/>
+            <column name="date" type="DATE"/>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="BIGINT"/>
+            <column name="warehouse_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="tours" baseColumnNames="vehicle_id"
+                                 referencedTableName="vehicles" referencedColumnNames="id"
+                                 constraintName="fk_tour_vehicle"/>
+        <addForeignKeyConstraint baseTableName="tours" baseColumnNames="warehouse_id"
+                                 referencedTableName="warehouses" referencedColumnNames="id"
+                                 constraintName="fk_tour_warehouse"/>
+
+        <rollback>
+            <dropTable tableName="tours"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Delivery table -->
+    <changeSet id="v1-004-create-delivery" author="Ibrahim">
+        <createTable tableName="deliveries">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="altitude" type="DOUBLE"/>
+            <column name="longitude" type="DOUBLE"/>
+            <column name="max_weight" type="DOUBLE"/>
+            <column name="max_volume" type="DOUBLE"/>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_slot" type="VARCHAR(11)"/>
+            <column name="tour_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="deliveries" baseColumnNames="tour_id"
+                                 referencedTableName="tours" referencedColumnNames="id"
+                                 constraintName="fk_delivery_tour"/>
+
+        <rollback>
+            <dropTable tableName="deliveries"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
