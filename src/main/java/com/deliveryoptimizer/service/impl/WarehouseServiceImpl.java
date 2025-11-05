@@ -5,34 +5,35 @@ import com.deliveryoptimizer.mapper.WarehouseMapper;
 import com.deliveryoptimizer.model.Warehouse;
 import com.deliveryoptimizer.repository.WarehouseRepository;
 import com.deliveryoptimizer.service.interfaces.WarehouseService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
-
-    public WarehouseServiceImpl(WarehouseRepository warehouseRepository){
-        this.warehouseRepository = warehouseRepository;
-    }
+    private final WarehouseMapper warehouseMapper;
 
     @Override
     public WarehouseDTO createWarehouse(WarehouseDTO dto){
-        Warehouse warehouse = WarehouseMapper.toEntity(dto);
+        Warehouse warehouse = warehouseMapper.toEntity(dto);
         Warehouse saved = warehouseRepository.save(warehouse);
-        return WarehouseMapper.toDTO(saved);
+        return warehouseMapper.toDTO(saved);
     }
 
     @Override
     public List<WarehouseDTO> getAllWarehouses(){
         return warehouseRepository.findAll().stream()
-                .map(WarehouseMapper::toDTO)
+                .map(warehouseMapper::toDTO)
                 .toList();
     }
 
     @Override
     public WarehouseDTO getWarehouseById(Long id){
         return warehouseRepository.findById(id)
-                .map(WarehouseMapper::toDTO)
+                .map(warehouseMapper::toDTO)
                 .orElseThrow(()-> new RuntimeException("Warehouse Not Found !"));
     }
 
@@ -49,7 +50,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         Warehouse saved = warehouseRepository.save(warehouse);
 
-        return WarehouseMapper.toDTO(saved);
+        return warehouseMapper.toDTO(saved);
     }
 
     @Override

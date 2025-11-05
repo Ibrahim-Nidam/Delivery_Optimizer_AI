@@ -33,3 +33,8 @@ build/
 .vscode/
 application.properties
 logs
+
+.env
+application.yml
+application-qa.yml
+application-dev.yml

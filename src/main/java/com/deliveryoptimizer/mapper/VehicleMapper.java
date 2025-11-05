@@ -2,27 +2,14 @@ package com.deliveryoptimizer.mapper;
 
 import com.deliveryoptimizer.dto.VehicleDTO;
 import com.deliveryoptimizer.model.Vehicle;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class VehicleMapper {
-    public static VehicleDTO toDTO(Vehicle vehicle){
-        if(vehicle == null) return null;
+@Mapper(componentModel = "spring")
+public interface VehicleMapper {
 
-        return VehicleDTO.builder()
-                .id(vehicle.getId())
-                .name(vehicle.getName())
-                .type(vehicle.getType())
-                .maxWeight(vehicle.getMaxWeight())
-                .maxVolume(vehicle.getMaxVolume())
-                .maxDeliveries(vehicle.getMaxDeliveries())
-                .build();
-    }
+    VehicleDTO toDTO(Vehicle vehicle);
 
-    public static Vehicle toEntity(VehicleDTO dto){
-        if(dto == null) return null;
-        return Vehicle.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .type(dto.getType())
-                .build();
-    }
+    @Mapping(target = "tours", ignore = true)
+    Vehicle toEntity(VehicleDTO dto);
 }
