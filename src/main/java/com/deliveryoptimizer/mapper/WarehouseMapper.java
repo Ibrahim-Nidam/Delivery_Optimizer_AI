@@ -2,29 +2,14 @@ package com.deliveryoptimizer.mapper;
 
 import com.deliveryoptimizer.dto.WarehouseDTO;
 import com.deliveryoptimizer.model.Warehouse;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class WarehouseMapper {
-    public static WarehouseDTO toDTO(Warehouse warehouse){
-        if(warehouse == null) return null;
-        return WarehouseDTO.builder()
-                .id(warehouse.getId())
-                .address(warehouse.getAddress())
-                .altitude(warehouse.getAltitude())
-                .longitude(warehouse.getLongitude())
-                .openTime(warehouse.getOpenTime())
-                .closeTime(warehouse.getCloseTime())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface WarehouseMapper {
 
-    public static Warehouse toEntity(WarehouseDTO dto){
-        if(dto == null) return null;
-        return Warehouse.builder()
-                .id(dto.getId())
-                .address(dto.getAddress())
-                .altitude(dto.getAltitude())
-                .longitude(dto.getLongitude())
-                .openTime(dto.getOpenTime())
-                .closeTime(dto.getCloseTime())
-                .build();
-    }
+    WarehouseDTO toDTO(Warehouse warehouse);
+
+    @Mapping(target = "tours", ignore = true)
+    Warehouse toEntity(WarehouseDTO dto);
 }
