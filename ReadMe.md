@@ -1,279 +1,266 @@
-# 🚚 Delivery Tour Optimization System
+# 🚚 Delivery Tour Optimization System – **Version 2.0**
 
 ## 📌 Project Description
 
-This project is a **Spring Boot web application** developed in **Java 8+** that manages and optimizes delivery tours for a logistics company.
-The system aims to reduce travel distance and fuel consumption by comparing two algorithms:
-**Nearest Neighbor (NN)** and **Clarke & Wright (CW)**.
+This project is a **Spring Boot 3 web application** developed in **Java 17+** that manages and optimizes delivery tours for a logistics company.
+It is the evolution of the first version, with a **refactored architecture**, **new entities**, **Liquibase database migrations**, and an **AI-assisted optimization engine**.
 
-The application provides complete **CRUD operations** for managing warehouses, vehicles, and deliveries,
-and automatically generates optimized delivery tours while respecting vehicle constraints.
+The system aims to reduce travel distance and fuel consumption by dynamically selecting the **fastest optimization strategy** among:
 
-### 🎯 Main Objectives
+* 🧭 **Nearest Neighbor (NN)**
+* ⚙️ **Clarke & Wright (CW)**
+* 🤖 **AI-Based Optimizer** (Spring AI-powered)
 
-* Manage a **heterogeneous fleet** (Bike, Van, Truck) with their capacity constraints
-* Plan and **optimize delivery tours** automatically
-* **Compare** results between Nearest Neighbor and Clarke & Wright algorithms
-* Calculate total distance using **GPS coordinates (latitude/longitude)**
-* Provide a **REST API** tested through Postman
-* Respect software design patterns and dependency injection via `applicationContext.xml` only (no annotations)
+The architecture now respects the **Open/Closed Principle (OCP)** — new optimizers can be added without modifying the existing service logic.
+
+---
+
+## 🎯 Main Objectives
+
+* Manage a **heterogeneous fleet** (Bike, Van, Truck) with constraints on capacity, volume, and delivery count
+* Plan and optimize **delivery tours automatically**
+* Dynamically choose the **fastest optimizer** at runtime
+* Keep a **history of delivery status changes**
+* Add **Customer management** with link to deliveries
+* Provide multi-environment configurations (`dev`, `qa`)
+* Support **Liquibase migrations**, **YAML configs**, and **AI optimization**
 
 ---
 
 ## 🔗 Useful Links
 
-* 📂 [GitHub Repository](https://github.com/Ibrahim-Nidam/Delivery_Optimizer.git)
-* 📝 [Jira Board](https://ibrahimnidam-22.atlassian.net/jira/software/projects/DO/boards/167?atlOrigin=eyJpIjoiNWUwYjhkMzBlMTMxNDUzOWI5N2NmMzE4YjM4OGM5NjMiLCJwIjoiaiJ9)
+* 📂 [GitHub Repository](https://github.com/Ibrahim-Nidam/Delivery_Optimizer_AI.git)
+* 📝 [Jira Board](https://ibrahimnidam-22.atlassian.net/jira/software/projects/DOA/boards/232/backlog?atlOrigin=eyJpIjoiNTkyOTI2NjI0OWE1NDVhMDk5MDAzN2NhYzkxODM1MDAiLCJwIjoiaiJ9)
 
 ---
 
 ## 🛠️ Technologies Used
 
 * **Java 17+**
-* **Spring Boot**
-* **Spring Data JPA** with **H2 Database**
-* **Manual Dependency Injection** via `applicationContext.xml`
-* **REST API** (GET, POST, PUT, DELETE)
-* **Swagger** for API documentation
-* **Stream API & Collections API**
-* **Lombok** for boilerplate reduction
-* **JUnit 5** for unit testing
-* **java.util.logging** for logging
-* **Spring Boot DevTools** for hot reload
-* **SonarLint** for code quality
-* **Git & Jira** for project management
+* **Spring Boot 3**
+* **Spring Data JPA**
+* **Liquibase** for DB versioning
+* **Spring AI** for intelligent optimization
+* **PostgreSQL** (QA) / **H2** (Dev)
+* **YAML-based configuration**
+* **MapStruct** for DTO mapping
+* **REST API** + **GraphQL (optional)**
+* **Swagger UI** for API documentation
+* **JUnit 5 & Mockito** for testing
+* **SonarLint** for static analysis
+* **Docker (optional)** for containerized deployment
+* **ESP32 Integration (optional)** for network monitoring
+
+---
+
+## 🧩 New Functionalities in Version 2.0
+
+✅ Refactored entities and DTOs with stronger validation
+
+✅ New entities: `Customer` and `DeliveryHistory`
+
+✅ New **AI-based optimizer** integrated with Spring AI
+
+✅ **OptimizerFactory** auto-selects best-performing optimizer
+
+✅ **Liquibase** changelogs for schema versioning
+
+✅ Environment profiles:
+
+* `dev` → H2 Database
+* `qa` → PostgreSQL
+  
+  ✅ Configuration moved from `.properties` to `.yml`
+  
+  ✅ Optional **GraphQL API** for advanced querying
+  
+  ✅ Optional **Docker & ESP32 Monitoring** modules
 
 ---
 
 ## 📂 Project Structure
 
 ```
-delivery-optimizer/
+delivery-optimizer-v2/
 │
-├── pom.xml                              # Maven configuration (dependencies, plugins)
-├── .env                                 # ⚙️ enviorement variables
-├── README.md                            # Documentation
-├── .gitignore                           # Ignore target/, .idea/, logs, etc.
+├── pom.xml
+├── README.md
+├── .gitignore
 │
 ├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/deliveryoptimizer/
-│   │   │       │
-│   │   │       ├── DeliveryOptimizerApplication.java
-│   │   │       ├── ServletInitializer.java              
-│   │   │       ├── model/               # 📦 Entities + Enums
-│   │   │       │   ├── Warehouse.java
-│   │   │       │   ├── Vehicle.java
-│   │   │       │   ├── Delivery.java
-│   │   │       │   ├── Tour.java
-│   │   │       │   └── enums/
-│   │   │       │       ├── VehicleType.java
-│   │   │       │       ├── DeliveryStatus.java
-│   │   │       │       └── TourStatus.java
-│   │   │       │
-│   │   │       ├── dto/                 # 💬 Data Transfer Objects
-│   │   │       │   ├── DeliveryDTO.java
-│   │   │       │   ├── TourDTO.java
-│   │   │       │   ├── WarehouseDTO.java
-│   │   │       │   └── VehicleDTO.java
-│   │   │       │
-│   │   │       ├── mapper/              # 🧭 Mappers (Entity ↔ DTO)
-│   │   │       │   ├── DeliveryMapper.java
-│   │   │       │   ├── TourMapper.java
-│   │   │       │   ├── WarehouseMapper.java
-│   │   │       │   └── VehicleMapper.java
-│   │   │       │
-│   │   │       ├── repository/          # 🗄️ Data Access Layer
-│   │   │       │   ├── WarehouseRepository.java
-│   │   │       │   ├── VehicleRepository.java
-│   │   │       │   ├── DeliveryRepository.java
-│   │   │       │   └── TourRepository.java
-│   │   │       │
-│   │   │       ├── service/             # 💼 Business Layer
-│   │   │       │   ├── interfaces/
-│   │   │       │   │   ├── TourOptimizer.java
-│   │   │       │   │   ├── TourService.java
-│   │   │       │   │   ├── VehicleService.java
-│   │   │       │   │   ├── DeliveryService.java
-│   │   │       │   │   └── WarehouseService.java
-│   │   │       │   │
-│   │   │       │   └── impl/
-│   │   │       │       ├── NearestNeighborOptimizer.java
-│   │   │       │       ├── ClarkeWrightOptimizer.java
-│   │   │       │       ├── TourServiceImpl.java
-│   │   │       │       ├── VehicleServiceImpl.java
-│   │   │       │       ├── DeliveryServiceImpl.java
-│   │   │       │       └── WarehouseServiceImpl.java
-│   │   │       │
-│   │   │       ├── controller/          # 🎮 REST API Controllers
-│   │   │       │   ├── DeliveryController.java
-│   │   │       │   ├── VehicleController.java
-│   │   │       │   ├── TourController.java
-│   │   │       │   └── WarehouseController.java
-│   │   │       │
-│   │   │       └── util/                # 🧮 Utilities
-│   │   │           ├── TourUtils.java
-│   │   │           └── DistanceCalculator.java
+│   ├── main/java/com/deliveryoptimizer/
+│   │   ├── DeliveryOptimizerApplication.java
+│   │   ├── model/
+│   │   │   ├── Customer.java
+│   │   │   ├── Delivery.java
+│   │   │   ├── DeliveryHistory.java
+│   │   │   ├── Tour.java
+│   │   │   ├── Vehicle.java
+│   │   │   ├── Warehouse.java
+│   │   │   └── enums/
+│   │   │       ├── VehicleType.java
+│   │   │       ├── DeliveryStatus.java
+│   │   │       ├── TourStatus.java
+│   │   │       └── OptimizationMethod.java
 │   │   │
-│   │   └── resources/
-│   │       ├── static/
-│   │       │   ├── openapi.yaml
-│   │       │   ├── vehicles.yaml
-│   │       │   ├── tours.yaml
-│   │       │   ├── warehouses.yaml
-│   │       │   └── deliveries.yaml
-│   │       │   
-│   │       ├── templates/
-│   │       ├── application.properties   # ⚙️ Database and server configuration
-│   │       ├── applicationContext.xml   # 🧩 Bean configuration and DI
-│   │       └── logback.xml              # 📜 Logging setup
+│   │   ├── dto/
+│   │   │   ├── CustomerDTO.java
+│   │   │   ├── DeliveryDTO.java
+│   │   │   ├── DeliveryHistoryDTO.java
+│   │   │   ├── VehicleDTO.java
+│   │   │   ├── WarehouseDTO.java
+│   │   │   └── TourDTO.java
+│   │   │
+│   │   ├── mapper/
+│   │   │   ├── CustomerMapper.java
+│   │   │   ├── DeliveryMapper.java
+│   │   │   ├── DeliveryHistoryMapper.java
+│   │   │   ├── TourMapper.java
+│   │   │   ├── VehicleMapper.java
+│   │   │   └── WarehouseMapper.java
+│   │   │
+│   │   ├── repository/
+│   │   │   ├── CustomerRepository.java
+│   │   │   ├── DeliveryRepository.java
+│   │   │   ├── DeliveryHistoryRepository.java
+│   │   │   ├── VehicleRepository.java
+│   │   │   ├── WarehouseRepository.java
+│   │   │   └── TourRepository.java
+│   │   │
+│   │   ├── service/
+│   │   │   ├── interfaces/
+│   │   │   │   ├── TourService.java
+│   │   │   │   ├── VehicleService.java
+│   │   │   │   ├── DeliveryService.java
+│   │   │   │   ├── CustomerService.java
+│   │   │   │   ├── WarehouseService.java
+│   │   │   │   └── TourOptimizer.java
+│   │   │   │
+│   │   │   ├── impl/
+│   │   │   │   ├── NearestNeighborOptimizer.java
+│   │   │   │   ├── ClarkeWrightOptimizer.java
+│   │   │   │   ├── AIBasedOptimizer.java
+│   │   │   │   ├── OptimizerFactory.java
+│   │   │   │   ├── TourServiceImpl.java
+│   │   │   │   ├── VehicleServiceImpl.java
+│   │   │   │   ├── DeliveryServiceImpl.java
+│   │   │   │   ├── CustomerServiceImpl.java
+│   │   │   │   └── WarehouseServiceImpl.java
+│   │   │
+│   │   ├── controller/
+│   │   │   ├── CustomerController.java
+│   │   │   ├── DeliveryController.java
+│   │   │   ├── VehicleController.java
+│   │   │   ├── WarehouseController.java
+│   │   │   └── TourController.java
+│   │   │
+│   │   └── util/
+│   │       ├── DistanceCalculator.java
+│   │       ├── TourUtils.java
+│   │       └── AIModelHelper.java
 │   │
-│   └── test/
-│       └── java/com/deliveryoptimizer/
-│           ├── service/
-│           │   ├── NearestNeighborTest.java
-│           │   └── ClarkeWrightTest.java
-│           └── util/
-│               └── DistanceCalculatorTest.java
+│   └── resources/
+│       ├── db/changelog/db.changelog-master.yml
+│       ├── application.yml
+│       ├── application-dev.yml
+│       ├── application-qa.yml
+│       ├── logback.xml
+│       └── openapi/
+│           ├── tours.yaml
+│           ├── deliveries.yaml
+│           ├── vehicles.yaml
+│           ├── warehouses.yaml
+│           └── customers.yaml
 │
 └── docs/
-    ├── Delivery Optimizer.png           # UML Class Diagram
-    └── api-collection.json              # Postman Collection
+    ├── Delivery_Optimizer_V2.png
+    ├── api-collection.json
+    └── swagger_screenshots/
 ```
 
 ---
 
 ## ⚙️ Main Features
 
-✅ CRUD management for **Warehouse**, **Vehicle**, **Delivery**, and **Tour**
+✅ CRUD management for **Customer**, **Warehouse**, **Vehicle**, **Delivery**, and **Tour**
 
-✅ Generate **optimized tours** based on chosen algorithm (NN or CW)
+✅ **DeliveryHistory** tracking (status transitions logged automatically)
 
-✅ Compare total distance and performance between both algorithms
+✅ Dynamic **OptimizerFactory** — selects best performing algorithm (NN, CW, or AI)
 
-✅ Calculate distances from GPS coordinates
+✅ Distance computation from **GPS coordinates**
 
-✅ Manual **delivery status update** (PENDING → DELIVERED → FAILED)
+✅ Profile-based configurations (`dev` → H2, `qa` → PostgreSQL)
 
-✅ Apply **vehicle capacity constraints** (weight, volume, delivery count)
+✅ **Liquibase** for schema evolution
 
-✅ Configurable **start/end warehouse** with working hours
+✅ Optional **GraphQL endpoints**
 
-✅ Expose **REST API endpoints** (Swagger + Postman Collection)
+✅ Optional **Docker** and **ESP32 IoT monitoring** modules
 
-✅ **Dependency Injection via XML** (no `@Autowired`, `@Service`, or `@Repository`)
+✅ REST API + Swagger Documentation
 
-✅ Logging, validation, and exception handling
-
-✅ Unit testing with **JUnit 5**
+✅ Unit and Integration Testing
 
 ---
 
-## 🧩 Algorithms Implemented
+## 🧠 Optimizer Architecture (Open/Closed Principle)
 
-### 🧭 Nearest Neighbor (NN)
+| Optimizer                    | Description                             | Strength                 |
+| ---------------------------- | --------------------------------------- | ------------------------ |
+| **NearestNeighborOptimizer** | Chooses the next closest delivery       | Fast but approximate     |
+| **ClarkeWrightOptimizer**    | Merges routes based on distance savings | Balanced and reliable    |
+| **AIBasedOptimizer**         | Uses Spring AI to predict optimal route | Adaptive and data-driven |
 
-Simple algorithm choosing the **closest unvisited delivery** at each step.
+All implement `TourOptimizer`.
+`OptimizerFactory` automatically detects available optimizers and picks the **best-performing one** for each tour dynamically.
 
-✅ Fast (~50ms for 100 deliveries)
-
-❌ Often inefficient (long routes, local optima)
-
-### ⚙️ Clarke & Wright (CW)
-
-Savings-based algorithm that merges routes with the **highest distance savings** first.
-
-✅ Reduces total distance by up to **30%** compared to NN
-
-✅ Slightly slower (~200ms for 100 deliveries)
-
-⚖️ Balanced between efficiency and computational time
-
----
-
-## 📋 Vehicle Constraints
-
-| Vehicle Type | Max Weight | Max Volume | Max Deliveries |
-| ------------ | ---------- | ---------- | -------------- |
-| BIKE         | 50 kg      | 0.5 m³     | 15             |
-| VAN          | 1000 kg    | 8 m³       | 50             |
-| TRUCK        | 5000 kg    | 40 m³      | 100            |
-
----
-
-## 🧪 Running & Testing the Application
-
-### 1️⃣ Launch Application
-
-```bash
-mvn spring-boot:run
-```
-
-Then access:
-
-```
-http://localhost:8081/swagger-ui/index.html
-```
-
-### 2️⃣ Test with Postman
-
-* Import the file `/docs/api-collection.json`
-* Endpoints available:
-
-| Entity       | Base URL                                | Methods                |
-| ------------ |-----------------------------------------| ---------------------- |
-| Warehouse    | `/api/warehouses`                       | GET, POST, PUT, DELETE |
-| Vehicle      | `/api/vehicles`                         | GET, POST, PUT, DELETE |
-| Delivery     | `/api/deliveries`                       | GET, POST, PUT, DELETE |
-| Tour         | `/api/tours`                            | GET, POST, PUT, DELETE |
-| Optimization | `/api/tours/optimize?method=nn` or `cw` | GET                    |
-
-### 3️⃣ Run Unit Tests
-
-```bash
-  mvn test
-```
 ---
 
 ## 📊 UML Class Diagram
 
-![UML Diagram](docs/Delivery_Optimizer.png)
+![UML Diagram](docs/Delivery_Optimizer_AI.png)
 
 ---
 
-## 📸 Application ScreenShots
+## 🧪 Run & Test
 
-![Swagger](docs/swagger.png)
+```bash
+  mvn spring-boot:run
+```
 
+**Swagger UI:**
+👉 [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 
-![Swagger](docs/swagger%20Endpoints.png)
+**Postman Collection:**
+Import `/docs/api-collection.json`
+
+**Run tests:**
+
+```bash
+mvn test
+```
 
 ---
 
-## ✅ Performance & Evaluation Criteria
+## ⚡ Example API Endpoints
 
-* ✅ Respect of all functional and business rules
-* ✅ Clean layered architecture with DTO and Repository patterns
-* ✅ Proper dependency injection via `applicationContext.xml`
-* ✅ Efficient and tested algorithm implementations
-* ✅ Swagger-documented REST API
-* ✅ Code quality verified with SonarLint
-* ✅ Versioned with Git and managed via Jira
+| Entity                          | Base URL          | Methods                |
+| ------------------------------- | ----------------- | ---------------------- |
+| `/api/customers`                | Manage customers  | GET, POST, PUT, DELETE |
+| `/api/deliveries`               | Manage deliveries | GET, POST, PUT, DELETE |
+| `/api/warehouses`               | Manage warehouses | GET, POST, PUT, DELETE |
+| `/api/vehicles`                 | Manage vehicles   | GET, POST, PUT, DELETE |
+| `/api/tours`                    | Manage tours      | GET, POST, PUT, DELETE |
+| `/api/tours/optimize?method=ai` | AI optimization   | GET                    |
 
 ---
 
 ## 📅 Project Management
 
-* **Duration:** 20/10/2025 → 28/10/2025 (7 days)
-* **Type:** Individual project
-* **Tools:** GitHub, Jira, SonarLint, Postman
-* **Deliverables:**
-
-    * Source code
-    * Class diagram
-    * Swagger / Postman collection
-    * README.md
-    * Jira project link
+* **Duration:** 03/11/2025 → 11/11/2025
+* **Type:** Individual
+* **Version:** 2.0
+* **Tools:** GitHub, Jira, SonarLint, Postman, Docker, Spring AI
 
 ---
