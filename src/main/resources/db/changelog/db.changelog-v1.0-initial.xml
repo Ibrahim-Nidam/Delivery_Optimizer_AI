@@ -17,8 +17,8 @@
             </column>
             <column name="altitude" type="DOUBLE"/>
             <column name="longitude" type="DOUBLE"/>
-            <column name="openTime" type="TIME"/>
-            <column name="closeTime" type="TIME"/>
+            <column name="open_time" type="TIME"/>
+            <column name="close_time" type="TIME"/>
         </createTable>
     </changeSet>
 
@@ -32,9 +32,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="VARCHAR(20)"/>
-            <column name="maxWeight" type="DOUBLE"/>
-            <column name="maxVolume" type="DOUBLE"/>
-            <column name="maxDeliveries" type="INT"/>
+            <column name="max_weight" type="DOUBLE"/>
+            <column name="max_volume" type="DOUBLE"/>
+            <column name="max_deliveries" type="INT"/>
         </createTable>
     </changeSet>
 
@@ -44,7 +44,7 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="totalDistance" type="DOUBLE"/>
+            <column name="total_distance" type="DOUBLE"/>
             <column name="date" type="DATE"/>
             <column name="status" type="VARCHAR(20)">
                 <constraints nullable="false"/>
@@ -69,12 +69,12 @@
             </column>
             <column name="altitude" type="DOUBLE"/>
             <column name="longitude" type="DOUBLE"/>
-            <column name="maxWeight" type="DOUBLE"/>
-            <column name="maxVolume" type="DOUBLE"/>
+            <column name="max_weight" type="DOUBLE"/>
+            <column name="max_volume" type="DOUBLE"/>
             <column name="status" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="timeSlot" type="VARCHAR(11)"/>
+            <column name="time_slot" type="VARCHAR(11)"/>
             <column name="tour_id" type="BIGINT"/>
         </createTable>
 
