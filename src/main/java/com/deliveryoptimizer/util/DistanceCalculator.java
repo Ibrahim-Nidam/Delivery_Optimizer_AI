@@ -2,7 +2,9 @@ package com.deliveryoptimizer.util;
 
 import com.deliveryoptimizer.model.Delivery;
 import com.deliveryoptimizer.model.Warehouse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DistanceCalculator {
     private static final double EARTH_RADIUS_KM = 6371.0;
 
