@@ -5,34 +5,36 @@ import com.deliveryoptimizer.mapper.DeliveryMapper;
 import com.deliveryoptimizer.model.Delivery;
 import com.deliveryoptimizer.repository.DeliveryRepository;
 import com.deliveryoptimizer.service.interfaces.DeliveryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryMapper deliveryMapper;
 
-    public DeliveryServiceImpl(DeliveryRepository deliveryRepository){
-        this.deliveryRepository = deliveryRepository;
-    }
 
     @Override
     public DeliveryDTO createDelivery(DeliveryDTO dto){
-        Delivery delivery = DeliveryMapper.toEntity(dto);
+        Delivery delivery = deliveryMapper.toEntity(dto);
         Delivery saved = deliveryRepository.save(delivery);
-        return DeliveryMapper.toDTO(saved);
+        return deliveryMapper.toDTO(saved);
     }
 
     @Override
     public List<DeliveryDTO> getAllDeliveries(){
         return deliveryRepository.findAll().stream()
-                .map(DeliveryMapper::toDTO)
+                .map(deliveryMapper::toDTO)
                 .toList();
     }
 
     @Override
     public DeliveryDTO getDeliveryById(Long id){
         return deliveryRepository.findById(id)
-                .map(DeliveryMapper::toDTO)
+                .map(deliveryMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Delivery Not Found !"));
     }
 
@@ -50,7 +52,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         Delivery saved = deliveryRepository.save(delivery);
 
-        return DeliveryMapper.toDTO(saved);
+        return deliveryMapper.toDTO(saved);
     }
 
     @Override

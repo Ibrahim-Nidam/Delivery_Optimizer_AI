@@ -5,32 +5,34 @@ import com.deliveryoptimizer.mapper.VehicleMapper;
 import com.deliveryoptimizer.model.Vehicle;
 import com.deliveryoptimizer.repository.VehicleRepository;
 import com.deliveryoptimizer.service.interfaces.VehicleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
+    private final VehicleMapper vehicleMapper;
 
-    public VehicleServiceImpl(VehicleRepository vehicleRepository){
-        this.vehicleRepository = vehicleRepository;
-    }
 
     @Override
     public VehicleDTO createVehicle(VehicleDTO dto){
-        Vehicle vehicle = VehicleMapper.toEntity(dto);
+        Vehicle vehicle = vehicleMapper.toEntity(dto);
 
         vehicle.setMaxWeight(vehicle.getType().getMaxWeightKg());
         vehicle.setMaxVolume(vehicle.getType().getMaxVolumeM3());
         vehicle.setMaxDeliveries(vehicle.getType().getMaxDeliveries());
 
         Vehicle saved = vehicleRepository.save(vehicle);
-        return VehicleMapper.toDTO(saved);
+        return vehicleMapper.toDTO(saved);
     }
 
     @Override
     public List<VehicleDTO> getAllVehicles(){
         return vehicleRepository.findAll().stream()
-                .map(VehicleMapper::toDTO)
+                .map(vehicleMapper::toDTO)
                 .toList();
 
     }
@@ -38,7 +40,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public VehicleDTO getVehicleById(Long id){
         return vehicleRepository.findById(id)
-                .map(VehicleMapper::toDTO)
+                .map(vehicleMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Vehicle Not Found !"));
     }
 
@@ -56,7 +58,7 @@ public class VehicleServiceImpl implements VehicleService {
 
         Vehicle saved = vehicleRepository.save(vehicle);
 
-        return VehicleMapper.toDTO(saved);
+        return vehicleMapper.toDTO(saved);
     }
 
     @Override

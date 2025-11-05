@@ -4,16 +4,19 @@ import com.deliveryoptimizer.model.Delivery;
 import com.deliveryoptimizer.model.Tour;
 import com.deliveryoptimizer.service.interfaces.TourOptimizer;
 import com.deliveryoptimizer.util.DistanceCalculator;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class NearestNeighborOptimizer implements TourOptimizer {
     private final DistanceCalculator distanceCalculator;
 
-    public NearestNeighborOptimizer(DistanceCalculator distanceCalculator){
-        this.distanceCalculator = distanceCalculator;
-    }
 
     @Override
     public List<Delivery> optimizerTour(Tour tour){

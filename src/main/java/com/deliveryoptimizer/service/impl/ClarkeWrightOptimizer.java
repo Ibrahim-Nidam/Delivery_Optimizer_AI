@@ -5,15 +5,17 @@ import com.deliveryoptimizer.model.Tour;
 import com.deliveryoptimizer.model.Warehouse;
 import com.deliveryoptimizer.service.interfaces.TourOptimizer;
 import com.deliveryoptimizer.util.DistanceCalculator;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class ClarkeWrightOptimizer implements TourOptimizer {
     private final DistanceCalculator distanceCalculator;
-
-    public ClarkeWrightOptimizer(DistanceCalculator distanceCalculator){
-        this.distanceCalculator = distanceCalculator;
-    }
 
     @Override
     public List<Delivery> optimizerTour(Tour tour){

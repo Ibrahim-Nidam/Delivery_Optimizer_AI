@@ -16,12 +16,18 @@ import com.deliveryoptimizer.repository.WarehouseRepository;
 import com.deliveryoptimizer.service.interfaces.TourService;
 import com.deliveryoptimizer.util.DistanceCalculator;
 import com.deliveryoptimizer.util.TourUtils;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class TourServiceImpl implements TourService {
     private final TourRepository tourRepository;
     private final DeliveryRepository deliveryRepository;
@@ -30,16 +36,7 @@ public class TourServiceImpl implements TourService {
     private final NearestNeighborOptimizer nearestNeighborOptimizer;
     private final ClarkeWrightOptimizer clarkeWrightOptimizer;
     private final DistanceCalculator distanceCalculator;
-
-    public TourServiceImpl(TourRepository tourRepository, DeliveryRepository deliveryRepository, WarehouseRepository warehouseRepository, VehicleRepository vehicleRepository, NearestNeighborOptimizer nearestNeighborOptimizer, ClarkeWrightOptimizer clarkeWrightOptimizer, DistanceCalculator distanceCalculator){
-        this.tourRepository = tourRepository;
-        this.vehicleRepository = vehicleRepository;
-        this.warehouseRepository = warehouseRepository;
-        this.deliveryRepository = deliveryRepository;
-        this.nearestNeighborOptimizer = nearestNeighborOptimizer;
-        this.clarkeWrightOptimizer = clarkeWrightOptimizer;
-        this.distanceCalculator = distanceCalculator;
-    }
+    private final TourMapper tourMapper;
 
     @Override
     public TourDTO createTour(TourDTO dto){
@@ -61,7 +58,7 @@ public class TourServiceImpl implements TourService {
             throw new RuntimeException("One or more deliveries are already assigned to another tour");
         }
 
-        Tour tour = TourMapper.toEntity(dto);
+        Tour tour = tourMapper.toEntity(dto);
         tour.setVehicle(vehicle);
         tour.setWarehouse(warehouse);
         tour.setDeliveries(deliveries);
@@ -70,20 +67,20 @@ public class TourServiceImpl implements TourService {
         Tour saved = tourRepository.save(tour);
         deliveries.forEach(d -> d.setTour(saved));
         deliveryRepository.saveAll(deliveries);
-        return TourMapper.toDTO(saved);
+        return tourMapper.toDTO(saved);
     }
 
     @Override
     public List<TourDTO> getAllTours(){
         return tourRepository.findAll().stream()
-                .map(TourMapper::toDTO)
+                .map(tourMapper::toDTO)
                 .toList();
     }
 
     @Override
     public TourDTO getTourById(Long id){
         return tourRepository.findById(id)
-                .map(TourMapper::toDTO)
+                .map(tourMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Tour Not Found!"));
     }
 
@@ -131,7 +128,7 @@ public class TourServiceImpl implements TourService {
         deliveries.forEach(d -> d.setTour(saved));
         deliveryRepository.saveAll(deliveries);
 
-        return TourMapper.toDTO(saved);
+        return tourMapper.toDTO(saved);
     }
 
     @Override
@@ -192,7 +189,7 @@ public class TourServiceImpl implements TourService {
         tourRepository.save(tour);
         deliveryRepository.saveAll(deliveries);
 
-        return TourMapper.toDTO(tour);
+        return tourMapper.toDTO(tour);
     }
 
     @Override
