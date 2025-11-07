@@ -3,7 +3,7 @@ paths:
     get:
       tags: [Tours]
       summary: Get all tours
-      description: Returns a list of all tours
+      description: Returns a list of all tours in the system.
       responses:
         '200':
           description: List of tours
@@ -17,7 +17,7 @@ paths:
     post:
       tags: [Tours]
       summary: Create a new tour
-      description: Adds a new tour with associated vehicle, warehouse, and deliveries
+      description: Creates a new tour with vehicle, warehouse, and deliveries.
       requestBody:
         required: true
         content:
@@ -26,9 +26,9 @@ paths:
               $ref: '#/components/schemas/TourDTO'
             example:
               vehicleId: 1
-              deliveryIds: [1, 2, 3]
               warehouseId: 1
-              date: "2025-10-24"
+              deliveryIds: [1, 2, 3]
+              date: "2025-11-07"
               totalDistance: 120.5
               status: "PLANNED"
       responses:
@@ -49,7 +49,6 @@ paths:
           required: true
           schema:
             type: integer
-            example: 1
       responses:
         '200':
           description: Tour retrieved successfully
@@ -62,27 +61,19 @@ paths:
 
     put:
       tags: [Tours]
-      summary: Update a tour
+      summary: Update an existing tour
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
-            example: 1
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TourDTO'
-            example:
-              vehicleId: 1
-              deliveryIds: [1, 2, 3]
-              warehouseId: 1
-              date: "2025-10-25"
-              totalDistance: 130.0
-              status: "IN_PROGRESS"
       responses:
         '200':
           description: Tour updated successfully
@@ -102,7 +93,6 @@ paths:
           required: true
           schema:
             type: integer
-            example: 1
       responses:
         '204':
           description: Tour deleted successfully
@@ -112,15 +102,13 @@ paths:
   /api/tours/{id}/deliveries:
     post:
       tags: [Tours]
-      summary: Add deliveries to a tour
+      summary: Add deliveries to an existing tour
       description: >
-        Adds a list of deliveries to an existing tour.
-        Validates vehicle capacity and ensures deliveries are not already assigned.
+        Adds deliveries to a tour while validating vehicle capacity and ensuring no delivery is already assigned.
       parameters:
         - name: id
           in: path
           required: true
-          description: ID of the tour
           schema:
             type: integer
             example: 1
@@ -135,260 +123,55 @@ paths:
               example: [4, 5, 6]
       responses:
         '200':
-          description: Deliveries successfully added to the tour
+          description: Deliveries successfully added
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TourDTO'
         '400':
-          description: Invalid delivery list or vehicle capacity exceeded
+          description: Invalid delivery list or vehicle constraints exceeded
         '404':
           description: Tour or deliveries not found
 
-  /api/tours/{id}/optimize/nn:
+  /api/tours/{id}/optimize:
     get:
       tags: [Tours]
-      summary: Optimize tour using Nearest Neighbor algorithm
+      summary: Optimize tour using configured optimizer
       description: |
-        Optimizes the delivery order using the Nearest Neighbor algorithm.
-        
-        **Algorithm principle:** Always visit the closest unvisited delivery point.
-        
-        **Step-by-step calculation example:**
-        - Step 1: From Warehouse → Delivery A (5km) - closest delivery
-        - Step 2: From A → Delivery C (8km) - closest unvisited
-        - Step 3: From C → Delivery B (7km) - closest unvisited
-        - Step 4: From B → Delivery D (6km) - only remaining delivery
-        - Step 5: From D → Warehouse (20km) - return to warehouse
-        
-        **Final tour:** Warehouse → A → C → B → D → Warehouse
-        
-        **Total distance:** 5 + 8 + 7 + 6 + 20 = 46km
+        Optimizes the delivery order using the optimizer defined in the application configuration (`application.yml`).
+
+        The optimizer type can be one of:
+        - `NN`: Nearest Neighbor algorithm  
+        - `CW`: Clarke & Wright algorithm  
+        - `AI`: AI-powered optimization using Spring AI and LLM integration
+
+        This single endpoint replaces separate algorithm-specific ones.  
+        Example configuration in `application.yml`:
+        ```yaml
+        optimizer:
+          type: NN # or CW, AI
+        ```
+
+        Returns the list of delivery IDs in optimized order.
       parameters:
         - name: id
           in: path
           required: true
-          description: ID of the tour to optimize
           schema:
             type: integer
             example: 1
       responses:
         '200':
-          description: Tour optimized successfully with detailed route information
+          description: Tour optimized successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OptimizationResultDTO'
-              example:
-                tourId: 1
-                algorithm: "Nearest Neighbor"
-                optimizedDeliveryIds: [3, 1, 2, 4]
-                totalDistance: 46.0
-                steps:
-                  - stepNumber: 1
-                    from: "Warehouse (Main)"
-                    to: "Delivery A"
-                    fromId: null
-                    toId: 3
-                    distance: 5.0
-                    cumulativeDistance: 5.0
-                  - stepNumber: 2
-                    from: "Delivery A"
-                    to: "Delivery C"
-                    fromId: 3
-                    toId: 1
-                    distance: 8.0
-                    cumulativeDistance: 13.0
-                  - stepNumber: 3
-                    from: "Delivery C"
-                    to: "Delivery B"
-                    fromId: 1
-                    toId: 2
-                    distance: 7.0
-                    cumulativeDistance: 20.0
-                  - stepNumber: 4
-                    from: "Delivery B"
-                    to: "Delivery D"
-                    fromId: 2
-                    toId: 4
-                    distance: 6.0
-                    cumulativeDistance: 26.0
-                  - stepNumber: 5
-                    from: "Delivery D"
-                    to: "Warehouse (Main)"
-                    fromId: 4
-                    toId: null
-                    distance: 20.0
-                    cumulativeDistance: 46.0
-                warehouseLocation:
-                  name: "Main Warehouse"
-                  latitude: 33.5731
-                  longitude: -7.5898
-                deliveries:
-                  - id: 3
-                    customerName: "Client A"
-                    address: "123 Rue A, Casablanca"
-                    latitude: 33.5800
-                    longitude: -7.5850
-                  - id: 1
-                    customerName: "Client C"
-                    address: "789 Rue C, Casablanca"
-                    latitude: 33.5900
-                    longitude: -7.5800
-                  - id: 2
-                    customerName: "Client B"
-                    address: "456 Rue B, Casablanca"
-                    latitude: 33.5850
-                    longitude: -7.5750
-                  - id: 4
-                    customerName: "Client D"
-                    address: "321 Rue D, Casablanca"
-                    latitude: 33.5950
-                    longitude: -7.5700
-        '404':
-          description: Tour not found
+                type: array
+                items:
+                  type: integer
+                example: [3, 1, 2, 4]
         '400':
-          description: Tour has no deliveries to optimize
-
-  /api/tours/{id}/optimize/cw:
-    get:
-      tags: [Tours]
-      summary: Optimize tour using Clarke & Wright algorithm
-      description: |
-        Optimizes the delivery order using the Clarke & Wright Savings algorithm.
-        
-        **Algorithm principle:** Merge delivery pairs that save the most distance, recalculating savings globally.
-        
-        **Step-by-step calculation example:**
-        - Step 1: Compute savings for all delivery pairs using formula:
-          Savings(i,j) = Distance(Warehouse,i) + Distance(Warehouse,j) - Distance(i,j)
-        - Step 2: Sort pairs by decreasing savings
-        - Step 3: Merge deliveries into tours according to savings, respecting vehicle constraints
-        - Step 4: Repeat until no more merges possible
-        - Step 5: Return final optimized tour sequence
-        
-        **Example for 4 deliveries:** Warehouse → A → B → D → C → Warehouse  
-        **Total distance:** 44 km (improvement vs Nearest Neighbor: 46 km)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the tour to optimize
-          schema:
-            type: integer
-            example: 1
-      responses:
-        '200':
-          description: Tour optimized successfully with detailed route information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OptimizationResultDTO'
-              example:
-                tourId: 1
-                algorithm: "Clarke & Wright"
-                optimizedDeliveryIds: [1, 2, 4, 3]
-                totalDistance: 44.0
-                steps:
-                  - stepNumber: 1
-                    from: "Warehouse (Main)"
-                    to: "Delivery A"
-                    fromId: null
-                    toId: 1
-                    distance: 5.0
-                    cumulativeDistance: 5.0
-                  - stepNumber: 2
-                    from: "Delivery A"
-                    to: "Delivery B"
-                    fromId: 1
-                    toId: 2
-                    distance: 12.0
-                    cumulativeDistance: 17.0
-                  - stepNumber: 3
-                    from: "Delivery B"
-                    to: "Delivery D"
-                    fromId: 2
-                    toId: 4
-                    distance: 6.0
-                    cumulativeDistance: 23.0
-                  - stepNumber: 4
-                    from: "Delivery D"
-                    to: "Delivery C"
-                    fromId: 4
-                    toId: 3
-                    distance: 11.0
-                    cumulativeDistance: 34.0
-                  - stepNumber: 5
-                    from: "Delivery C"
-                    to: "Warehouse (Main)"
-                    fromId: 3
-                    toId: null
-                    distance: 10.0
-                    cumulativeDistance: 44.0
-                warehouseLocation:
-                  name: "Main Warehouse"
-                  latitude: 33.5731
-                  longitude: -7.5898
-                deliveries:
-                  - id: 1
-                    customerName: "Client A"
-                    address: "123 Rue A, Casablanca"
-                    latitude: 33.5800
-                    longitude: -7.5850
-                  - id: 2
-                    customerName: "Client B"
-                    address: "456 Rue B, Casablanca"
-                    latitude: 33.5850
-                    longitude: -7.5750
-                  - id: 4
-                    customerName: "Client D"
-                    address: "321 Rue D, Casablanca"
-                    latitude: 33.5950
-                    longitude: -7.5700
-                  - id: 3
-                    customerName: "Client C"
-                    address: "789 Rue C, Casablanca"
-                    latitude: 33.5900
-                    longitude: -7.5800
-        '404':
-          description: Tour not found
-        '400':
-          description: Tour has no deliveries to optimize
-
-  /api/tours/{id}/distances:
-    get:
-      tags: [ Tours ]
-      summary: Get total distances for a tour using both optimization algorithms
-      description: >
-        Calculates the total distances of a tour if optimized using:
-        - Nearest Neighbor (NN)
-        - Clarke & Wright (CW)
-
-        Returns both distances with units for comparison.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the tour
-          schema:
-            type: integer
-            example: 1
-      responses:
-        '200':
-          description: Distances calculated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  "Nearest Neighbor":
-                    type: string
-                    description: Total distance using Nearest Neighbor algorithm (with unit)
-                    example: "8.3 km"
-                  "Clarke Wright":
-                    type: string
-                    description: Total distance using Clarke & Wright algorithm (with unit)
-                    example: "8.5 km"
+          description: Tour has no deliveries to optimize or invalid optimizer configuration
         '404':
           description: Tour not found
 

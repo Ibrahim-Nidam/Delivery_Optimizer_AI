@@ -1,5 +1,6 @@
 package com.deliveryoptimizer.service.impl;
 
+import com.deliveryoptimizer.annotation.OptimizerType;
 import com.deliveryoptimizer.model.Delivery;
 import com.deliveryoptimizer.model.Tour;
 import com.deliveryoptimizer.service.interfaces.TourOptimizer;
@@ -12,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@OptimizerType("NN")
 @RequiredArgsConstructor
 @Transactional
 public class NearestNeighborOptimizer implements TourOptimizer {
     private final DistanceCalculator distanceCalculator;
-
 
     @Override
     public List<Delivery> optimizerTour(Tour tour){
@@ -44,7 +45,6 @@ public class NearestNeighborOptimizer implements TourOptimizer {
             remaining.remove(nearest);
             currentLat = nearest.getAltitude();
             currentLon = nearest.getLongitude();
-
         }
         return ordered;
     }

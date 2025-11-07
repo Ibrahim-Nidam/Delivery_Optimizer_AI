@@ -7,12 +7,13 @@ import com.deliveryoptimizer.model.Tour;
 import com.deliveryoptimizer.model.Vehicle;
 import com.deliveryoptimizer.model.Warehouse;
 import com.deliveryoptimizer.model.enums.DeliveryStatus;
-import com.deliveryoptimizer.model.enums.OptimizationMethod;
 import com.deliveryoptimizer.model.enums.TourStatus;
 import com.deliveryoptimizer.repository.DeliveryRepository;
 import com.deliveryoptimizer.repository.TourRepository;
 import com.deliveryoptimizer.repository.VehicleRepository;
 import com.deliveryoptimizer.repository.WarehouseRepository;
+import com.deliveryoptimizer.service.factory.OptimizerFactory;
+import com.deliveryoptimizer.service.interfaces.TourOptimizer;
 import com.deliveryoptimizer.service.interfaces.TourService;
 import com.deliveryoptimizer.util.DistanceCalculator;
 import com.deliveryoptimizer.util.TourUtils;
@@ -20,7 +21,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +33,7 @@ public class TourServiceImpl implements TourService {
     private final DeliveryRepository deliveryRepository;
     private final WarehouseRepository warehouseRepository;
     private final VehicleRepository vehicleRepository;
-    private final NearestNeighborOptimizer nearestNeighborOptimizer;
-    private final ClarkeWrightOptimizer clarkeWrightOptimizer;
+    private final OptimizerFactory optimizerFactory;
     private final DistanceCalculator distanceCalculator;
     private final TourMapper tourMapper;
 
@@ -193,17 +192,13 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    public List<Long> optimizeTour(Long tourId, OptimizationMethod method){
+    public List<Long> optimizeTour(Long tourId){
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("Tour Not Found!"));
 
-        List<Delivery> optimized;
-
-        switch (method){
-            case NN -> optimized = nearestNeighborOptimizer.optimizerTour(tour);
-            case CW -> optimized = clarkeWrightOptimizer.optimizerTour(tour);
-            default -> throw new IllegalArgumentException("Unsupported optimization method: " + method);
-        }
+        // Get the configured optimizer from application.yml
+        TourOptimizer optimizer = optimizerFactory.getOptimizer();
+        List<Delivery> optimized = optimizer.optimizerTour(tour);
 
         tour.setDeliveries(optimized);
         tourRepository.save(tour);
@@ -211,23 +206,5 @@ public class TourServiceImpl implements TourService {
         return optimized.stream()
                 .map(Delivery::getId)
                 .toList();
-    }
-
-    @Override
-    public Map<String, String> getTourDistances(Long tourId){
-        Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new RuntimeException("Tour Not Found!"));
-
-        List<Delivery> nnOrder = nearestNeighborOptimizer.optimizerTour(tour);
-        double nnDistance = TourUtils.calculateTotalDistance(tour.getWarehouse(), nnOrder, distanceCalculator);
-
-        List<Delivery> cwOrder = clarkeWrightOptimizer.optimizerTour(tour);
-        double cwDistance = TourUtils.calculateTotalDistance(tour.getWarehouse(), cwOrder, distanceCalculator);
-
-        Map<String, String> distances = new LinkedHashMap<>();
-        distances.put("Nearest Neighbor", TourUtils.formatDistance(nnDistance));
-        distances.put("Clarke Wright", TourUtils.formatDistance(cwDistance));
-
-        return distances;
     }
 }

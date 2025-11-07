@@ -1,5 +1,6 @@
 package com.deliveryoptimizer.service.impl;
 
+import com.deliveryoptimizer.annotation.OptimizerType;
 import com.deliveryoptimizer.model.Delivery;
 import com.deliveryoptimizer.model.Tour;
 import com.deliveryoptimizer.model.Warehouse;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@OptimizerType("CW")
 @RequiredArgsConstructor
 @Transactional
 public class ClarkeWrightOptimizer implements TourOptimizer {
