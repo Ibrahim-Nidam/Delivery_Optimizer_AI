@@ -51,20 +51,8 @@ public class TourController {
         return tourService.addDeliveriesToTour(id, deliveryIds);
     }
 
-    /**
-     * Single endpoint to optimize tour using the configured optimizer from application.yml
-     * The optimizer type is controlled by ai.optimizer.type property (NN, CW, or AI)
-     */
     @GetMapping("/{id}/optimize")
     public List<Long> optimizeTour(@PathVariable Long id){
         return tourService.optimizeTour(id);
-    }
-
-    /**
-     * Get distances for all available optimization methods for comparison
-     */
-    @GetMapping("/{id}/distances")
-    public Map<String, String> getTotalDistances(@PathVariable Long id){
-        return tourService.getTourDistances(id);
     }
 }

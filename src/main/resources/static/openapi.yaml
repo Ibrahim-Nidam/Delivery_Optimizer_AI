@@ -42,8 +42,6 @@ paths:
     $ref: './tours.yaml#/paths/~1api~1tours~1{id}~1deliveries'
   /api/tours/{id}/optimize:
     $ref: './tours.yaml#/paths/~1api~1tours~1{id}~1optimize'
-  /api/tours/{id}/distances:
-    $ref: './tours.yaml#/paths/~1api~1tours~1{id}~1distances'
 
 components:
   schemas:

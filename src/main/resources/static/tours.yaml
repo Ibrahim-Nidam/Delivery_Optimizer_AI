@@ -175,40 +175,6 @@ paths:
         '404':
           description: Tour not found
 
-  /api/tours/{id}/distances:
-    get:
-      tags: [Tours]
-      summary: Compare total distances for all available optimizers
-      description: >
-        Computes and compares total tour distances using all available optimizers (`NN`, `CW`, `AI`).
-        Useful for benchmarking and validating optimization performance.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-      responses:
-        '200':
-          description: Distances calculated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  Nearest Neighbor:
-                    type: string
-                    example: "8.3 km"
-                  Clarke Wright:
-                    type: string
-                    example: "8.5 km"
-                  AI Optimizer:
-                    type: string
-                    example: "7.8 km"
-        '404':
-          description: Tour not found
-
 components:
   schemas:
     TourDTO:

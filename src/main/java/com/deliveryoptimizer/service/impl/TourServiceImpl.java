@@ -207,41 +207,4 @@ public class TourServiceImpl implements TourService {
                 .map(Delivery::getId)
                 .toList();
     }
-
-    @Override
-    public Map<String, String> getTourDistances(Long tourId){
-        Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new RuntimeException("Tour Not Found!"));
-
-        Map<String, String> distances = new LinkedHashMap<>();
-
-        try {
-            TourOptimizer nnOptimizer = optimizerFactory.getOptimizer("NN");
-            List<Delivery> nnOrder = nnOptimizer.optimizerTour(tour);
-            double nnDistance = TourUtils.calculateTotalDistance(tour.getWarehouse(), nnOrder, distanceCalculator);
-            distances.put("Nearest Neighbor", TourUtils.formatDistance(nnDistance));
-        } catch (IllegalArgumentException e) {
-            distances.put("Nearest Neighbor", "Not available");
-        }
-
-        try {
-            TourOptimizer cwOptimizer = optimizerFactory.getOptimizer("CW");
-            List<Delivery> cwOrder = cwOptimizer.optimizerTour(tour);
-            double cwDistance = TourUtils.calculateTotalDistance(tour.getWarehouse(), cwOrder, distanceCalculator);
-            distances.put("Clarke Wright", TourUtils.formatDistance(cwDistance));
-        } catch (IllegalArgumentException e) {
-            distances.put("Clarke Wright", "Not available");
-        }
-
-        try {
-            TourOptimizer aiOptimizer = optimizerFactory.getOptimizer("AI");
-            List<Delivery> aiOrder = aiOptimizer.optimizerTour(tour);
-            double aiDistance = TourUtils.calculateTotalDistance(tour.getWarehouse(), aiOrder, distanceCalculator);
-            distances.put("AI Optimizer", TourUtils.formatDistance(aiDistance));
-        } catch (Exception e) {
-            distances.put("AI Optimizer", "Not available");
-        }
-
-        return distances;
-    }
 }
