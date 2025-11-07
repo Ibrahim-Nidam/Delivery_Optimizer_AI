@@ -1,7 +1,6 @@
 package com.deliveryoptimizer.controller;
 
 import com.deliveryoptimizer.dto.TourDTO;
-import com.deliveryoptimizer.model.enums.OptimizationMethod;
 import com.deliveryoptimizer.service.interfaces.TourService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -52,14 +51,20 @@ public class TourController {
         return tourService.addDeliveriesToTour(id, deliveryIds);
     }
 
-    @GetMapping("/{id}/optimize/nn")
+    /**
+     * Single endpoint to optimize tour using the configured optimizer from application.yml
+     * The optimizer type is controlled by ai.optimizer.type property (NN, CW, or AI)
+     */
+    @GetMapping("/{id}/optimize")
     public List<Long> optimizeTour(@PathVariable Long id){
-        return tourService.optimizeTour(id, OptimizationMethod.NN);
+        return tourService.optimizeTour(id);
     }
 
-    @GetMapping("/{id}/optimize/cw")
-    public List<Long> OptimizeTour(@PathVariable Long id) { return tourService.optimizeTour(id, OptimizationMethod.CW); }
-
+    /**
+     * Get distances for all available optimization methods for comparison
+     */
     @GetMapping("/{id}/distances")
-    public Map<String, String> getTotalDistances(@PathVariable Long id){ return tourService.getTourDistances(id); }
+    public Map<String, String> getTotalDistances(@PathVariable Long id){
+        return tourService.getTourDistances(id);
+    }
 }
