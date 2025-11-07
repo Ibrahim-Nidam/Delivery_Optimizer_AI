@@ -12,4 +12,5 @@ public interface DeliveryService {
     DeliveryDTO updateDelivery(Long id, DeliveryDTO dto);
     void deleteDelivery(Long id);
 
+    DeliveryDTO markDelivered(Long deliveryId);
 }
