@@ -19,4 +19,5 @@ public class DeliveryDTO {
     private double maxVolume;
     private String timeSlot;
     private DeliveryStatus status;
+    private Long customerId;
 }

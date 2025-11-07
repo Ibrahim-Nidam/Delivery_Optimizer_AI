@@ -29,8 +29,8 @@ paths:
               longitude: -7.5898
               maxWeight: 500
               maxVolume: 10
-              status: "PENDING"
               timeSlot: "08:00-10:00"
+              customerId: 1
       responses:
         '201':
           description: Delivery created successfully
@@ -102,6 +102,31 @@ paths:
         '404':
           description: Delivery not found
 
+  /api/deliveries/{id}/complete:
+    put:
+      tags: [Deliveries]
+      summary: Mark a delivery as delivered
+      description: Updates the delivery status to DELIVERED and records completion time.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the delivery to mark as delivered
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Delivery marked as delivered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryDTO'
+        '400':
+          description: Delivery already marked as delivered or invalid state
+        '404':
+          description: Delivery not found
+
 components:
   schemas:
     DeliveryDTO:
@@ -130,13 +155,21 @@ components:
           type: string
           enum: ["PENDING", "IN_TRANSIT", "DELIVERED", "FAILED"]
           example: "PENDING"
+          readOnly: true
         timeSlot:
           type: string
           example: "08:00-10:00"
+        customerId:
+          type: integer
+          example: 1
+        actualTime:
+          type: string
+          format: date-time
+          example: "2025-11-07T09:00:00"
       required:
         - altitude
         - longitude
         - maxWeight
         - maxVolume
-        - status
         - timeSlot
+        - customerId

@@ -76,6 +76,8 @@
             </column>
             <column name="time_slot" type="VARCHAR(11)"/>
             <column name="tour_id" type="BIGINT"/>
+            <column name="customer_id" type="BIGINT"/>
+            <column name="actual_time" type="TIMESTAMP"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="deliveries" baseColumnNames="tour_id"

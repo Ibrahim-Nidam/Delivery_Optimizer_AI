@@ -55,4 +55,10 @@ public class TourController {
     public List<Long> optimizeTour(@PathVariable Long id){
         return tourService.optimizeTour(id);
     }
+
+    @PutMapping("/{id}/close")
+    @ResponseStatus(HttpStatus.OK)
+    public TourDTO closeTour(@PathVariable Long id) {
+        return tourService.closeTour(id);
+    }
 }

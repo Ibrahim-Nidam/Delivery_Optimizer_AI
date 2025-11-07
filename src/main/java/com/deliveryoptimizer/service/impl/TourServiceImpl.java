@@ -2,28 +2,20 @@ package com.deliveryoptimizer.service.impl;
 
 import com.deliveryoptimizer.dto.TourDTO;
 import com.deliveryoptimizer.mapper.TourMapper;
-import com.deliveryoptimizer.model.Delivery;
-import com.deliveryoptimizer.model.Tour;
-import com.deliveryoptimizer.model.Vehicle;
-import com.deliveryoptimizer.model.Warehouse;
+import com.deliveryoptimizer.model.*;
 import com.deliveryoptimizer.model.enums.DeliveryStatus;
 import com.deliveryoptimizer.model.enums.TourStatus;
-import com.deliveryoptimizer.repository.DeliveryRepository;
-import com.deliveryoptimizer.repository.TourRepository;
-import com.deliveryoptimizer.repository.VehicleRepository;
-import com.deliveryoptimizer.repository.WarehouseRepository;
+import com.deliveryoptimizer.repository.*;
 import com.deliveryoptimizer.service.factory.OptimizerFactory;
 import com.deliveryoptimizer.service.interfaces.TourOptimizer;
 import com.deliveryoptimizer.service.interfaces.TourService;
-import com.deliveryoptimizer.util.DistanceCalculator;
 import com.deliveryoptimizer.util.TourUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +26,8 @@ public class TourServiceImpl implements TourService {
     private final WarehouseRepository warehouseRepository;
     private final VehicleRepository vehicleRepository;
     private final OptimizerFactory optimizerFactory;
-    private final DistanceCalculator distanceCalculator;
     private final TourMapper tourMapper;
+    private final DeliveryHistoryRepository deliveryHistoryRepository;
 
     @Override
     public TourDTO createTour(TourDTO dto){
@@ -64,7 +56,10 @@ public class TourServiceImpl implements TourService {
         tour.setStatus(TourStatus.PLANNED);
 
         Tour saved = tourRepository.save(tour);
-        deliveries.forEach(d -> d.setTour(saved));
+        deliveries.forEach(d -> {
+            d.setTour(saved);
+            d.setStatus(DeliveryStatus.IN_TRANSIT);
+        });
         deliveryRepository.saveAll(deliveries);
         return tourMapper.toDTO(saved);
     }
@@ -207,4 +202,49 @@ public class TourServiceImpl implements TourService {
                 .map(Delivery::getId)
                 .toList();
     }
+
+    @Override
+    public TourDTO closeTour(Long id) {
+        Tour tour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tour not found"));
+
+        if (tour.getStatus() == TourStatus.COMPLETED) {
+            throw new RuntimeException("Tour is already completed");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Delivery delivery : tour.getDeliveries()) {
+            delivery.setStatus(DeliveryStatus.DELIVERED);
+            delivery.setActualTime(now);
+            deliveryRepository.save(delivery);
+
+            // Compute planned time: use start of day or delivery-specific planned time
+            LocalDateTime planned = delivery.getTimeSlot() != null
+                    ? TourUtils.parseTimeSlotToDateTime(tour.getDate(), delivery.getTimeSlot())
+                    : tour.getDate().atStartOfDay();
+
+            // Calculate delay in minutes
+            int delayMinutes = (int) java.time.Duration.between(planned, now).toMinutes();
+
+            DeliveryHistory history = DeliveryHistory.builder()
+                    .tour(tour)
+                    .customer(delivery.getCustomer())
+                    .deliveryDate(tour.getDate())
+                    .plannedTime(planned)
+                    .actualTime(now)
+                    .delayMinutes(delayMinutes)
+                    .dayOfWeek(tour.getDate().getDayOfWeek().name())
+                    .build();
+
+            deliveryHistoryRepository.save(history);
+        }
+
+        tour.setStatus(TourStatus.COMPLETED);
+        Tour saved = tourRepository.save(tour);
+
+        return tourMapper.toDTO(saved);
+    }
+
+
 }

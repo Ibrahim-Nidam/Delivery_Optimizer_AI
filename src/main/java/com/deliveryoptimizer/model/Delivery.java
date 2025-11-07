@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "deliveries")
 @Getter
@@ -38,4 +40,11 @@ public class Delivery {
     @JoinColumn(name = "tour_id")
     @JsonIgnore
     Tour tour;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @Column(name = "actual_time")
+    private LocalDateTime actualTime;
 }

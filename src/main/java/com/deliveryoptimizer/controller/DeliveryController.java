@@ -11,36 +11,43 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/deliveries")
 public class DeliveryController {
+
     private final DeliveryService deliveryService;
 
-    public DeliveryController(DeliveryService deliveryService){
+    public DeliveryController(DeliveryService deliveryService) {
         this.deliveryService = deliveryService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DeliveryDTO createDelivery(@Valid @RequestBody DeliveryDTO dto){
+    public DeliveryDTO createDelivery(@Valid @RequestBody DeliveryDTO dto) {
         return deliveryService.createDelivery(dto);
     }
 
     @GetMapping
-    public List<DeliveryDTO> getAllDeliveries(){
+    public List<DeliveryDTO> getAllDeliveries() {
         return deliveryService.getAllDeliveries();
     }
 
     @GetMapping("/{id}")
-    public DeliveryDTO getDeliveryById(@PathVariable Long id){
+    public DeliveryDTO getDeliveryById(@PathVariable Long id) {
         return deliveryService.getDeliveryById(id);
     }
 
     @PutMapping("/{id}")
-    public DeliveryDTO updateDelivery(@PathVariable Long id, @Valid @RequestBody DeliveryDTO dto){
+    public DeliveryDTO updateDelivery(@PathVariable Long id, @Valid @RequestBody DeliveryDTO dto) {
         return deliveryService.updateDelivery(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteDelivery(@PathVariable Long id){
+    public void deleteDelivery(@PathVariable Long id) {
         deliveryService.deleteDelivery(id);
+    }
+
+    @PutMapping("/{id}/complete")
+    @ResponseStatus(HttpStatus.OK)
+    public DeliveryDTO markDeliveryAsDelivered(@PathVariable Long id) {
+        return deliveryService.markDelivered(id);
     }
 }

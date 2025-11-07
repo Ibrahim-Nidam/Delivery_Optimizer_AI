@@ -11,9 +11,11 @@ import org.mapstruct.Named;
 public interface DeliveryMapper {
 
     @Mapping(source = "tour", target = "tourId", qualifiedByName = "tourToTourId")
+    @Mapping(target = "customerId", source = "customer.id")
     DeliveryDTO toDTO(Delivery delivery);
 
     @Mapping(source = "tourId", target = "tour", qualifiedByName = "tourIdToTour")
+    @Mapping(target = "customer", ignore = true)
     Delivery toEntity(DeliveryDTO dto);
 
     @Named("tourToTourId")

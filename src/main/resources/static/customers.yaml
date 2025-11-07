@@ -1,0 +1,133 @@
+paths:
+  /api/customers:
+    get:
+      tags: [Customers]
+      summary: Get all customers
+      description: Returns all customers
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerDTO'
+
+    post:
+      tags: [Customers]
+      summary: Create a new customer
+      description: Adds a customer to the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerDTO'
+            example:
+              name: "John Doe"
+              address: "123 Main St, City"
+              latitude: 33.5731
+              longitude: -7.5898
+              preferredTimeSlot: "08:00-10:00"
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+
+  /api/customers/{id}:
+    get:
+      tags: [Customers]
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Customer retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '404':
+          description: Customer not found
+
+    put:
+      tags: [Customers]
+      summary: Update a customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerDTO'
+      responses:
+        '200':
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '404':
+          description: Customer not found
+
+    delete:
+      tags: [Customers]
+      summary: Delete a customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Customer deleted successfully
+        '404':
+          description: Customer not found
+
+components:
+  schemas:
+    CustomerDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "John Doe"
+        address:
+          type: string
+          example: "123 Main St, City"
+        latitude:
+          type: number
+          format: double
+          example: 33.5731
+        longitude:
+          type: number
+          format: double
+          example: -7.5898
+        preferredTimeSlot:
+          type: string
+          example: "08:00-10:00"
+      required:
+        - name
+        - address
+        - latitude
+        - longitude

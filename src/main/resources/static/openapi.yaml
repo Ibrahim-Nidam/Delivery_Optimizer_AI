@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Delivery Optimizer API
-  version: 1.0.0
+  version: 2.0.0
   description: Comprehensive API documentation for the Delivery Optimizer system
 
 servers:
@@ -9,14 +9,19 @@ servers:
     description: Local development server
 
 tags:
+  - name: Customers
+    description: Manage customers
+  - name: Warehouses
+    description: Manage warehouse locations and schedules
   - name: Vehicles
     description: Manage delivery vehicles
   - name: Deliveries
     description: Manage delivery operations
-  - name: Warehouses
-    description: Manage warehouse locations and schedules
   - name: Tours
     description: Manage tours and associated deliveries
+  - name: DeliveryHistory
+    description: Reports and statistics on delivery history
+
 
 paths:
   /api/vehicles:
@@ -33,6 +38,8 @@ paths:
     $ref: './warehouses.yaml#/paths/~1api~1warehouses'
   /api/warehouses/{id}:
     $ref: './warehouses.yaml#/paths/~1api~1warehouses~1{id}'
+  /api/deliveries/{id}/complete:
+    $ref: './deliveries.yaml#/paths/~1api~1deliveries~1{id}~1complete'
 
   /api/tours:
     $ref: './tours.yaml#/paths/~1api~1tours'
@@ -42,6 +49,18 @@ paths:
     $ref: './tours.yaml#/paths/~1api~1tours~1{id}~1deliveries'
   /api/tours/{id}/optimize:
     $ref: './tours.yaml#/paths/~1api~1tours~1{id}~1optimize'
+  /api/tours/{id}/close:
+    $ref: './tours.yaml#/paths/~1api~1tours~1{id}~1close'
+
+
+  /api/customers:
+    $ref: './customers.yaml#/paths/~1api~1customers'
+  /api/customers/{id}:
+    $ref: './customers.yaml#/paths/~1api~1customers~1{id}'
+
+  /api/deliveryHistory/report:
+    $ref: './deliveryHistory.yaml#/paths/~1api~1deliveryHistory~1report'
+
 
 components:
   schemas:
@@ -53,3 +72,5 @@ components:
       $ref: './warehouses.yaml#/components/schemas/WarehouseDTO'
     TourDTO:
       $ref: './tours.yaml#/components/schemas/TourDTO'
+    CustomerDTO:
+      $ref: './customers.yaml#/components/schemas/CustomerDTO'
