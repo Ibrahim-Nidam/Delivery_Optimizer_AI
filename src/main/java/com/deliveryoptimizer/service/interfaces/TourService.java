@@ -13,4 +13,5 @@ public interface TourService {
     void deleteTour(Long id);
     TourDTO addDeliveriesToTour(Long tourId, List<Long> deliveryIds);
     List<Long> optimizeTour(Long tourId);
+    TourDTO closeTour(Long id);
 }
