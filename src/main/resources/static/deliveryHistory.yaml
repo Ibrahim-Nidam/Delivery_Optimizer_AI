@@ -1,0 +1,99 @@
+paths:
+  /api/deliveryHistory/report:
+    get:
+      tags: [DeliveryHistory]
+      summary: Get delivery history report
+      description: >
+        Retrieves a paginated report of delivery histories filtered by optional delay ranges.
+        Each entry includes customer, tour, planned and actual times, delay, and day of the week.
+      parameters:
+        - name: minDelay
+          in: query
+          description: Minimum delay in minutes
+          schema:
+            type: integer
+        - name: maxDelay
+          in: query
+          description: Maximum delay in minutes
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: Page number (0-based)
+          schema:
+            type: integer
+        - name: size
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+        - name: sort
+          in: query
+          description: Sorting criteria in the format `property,asc|desc`
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated delivery history report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryHistoryReportPageDTO'
+        '400':
+          description: Invalid query parameters
+
+components:
+  schemas:
+    DeliveryHistoryReportDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        customerId:
+          type: integer
+          example: 2
+        customerName:
+          type: string
+          example: "Client A"
+        tourId:
+          type: integer
+          example: 1
+        deliveryDate:
+          type: string
+          format: date
+          example: "2025-11-07"
+        plannedTime:
+          type: string
+          format: date-time
+          example: "2025-11-07T09:00:00"
+        actualTime:
+          type: string
+          format: date-time
+          example: "2025-11-07T09:15:00"
+        delayMinutes:
+          type: integer
+          example: 15
+        dayOfWeek:
+          type: string
+          example: "FRIDAY"
+
+    DeliveryHistoryReportPageDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryHistoryReportDTO'
+        totalElements:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 10
+        size:
+          type: integer
+          example: 10
+        number:
+          type: integer
+          example: 0
