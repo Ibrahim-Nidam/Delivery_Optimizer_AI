@@ -175,6 +175,39 @@ paths:
         '404':
           description: Tour not found
 
+  /api/tours/{id}/close:
+    put:
+      tags: [ Tours ]
+      summary: Close a tour
+      description: |
+        Marks the specified tour as **completed**.  
+        This action:
+        - Updates the tour status to `COMPLETED`
+        - Marks all associated deliveries as `DELIVERED`
+        - Creates a delivery history record for each delivery
+
+        Only tours that are not already completed can be closed.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the tour to close
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Tour closed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TourDTO'
+        '400':
+          description: Tour already completed or invalid state
+        '404':
+          description: Tour not found
+
+
 components:
   schemas:
     TourDTO:
