@@ -26,8 +26,8 @@ paths:
               $ref: '#/components/schemas/WarehouseDTO'
             example:
               address: "123 Logistics St"
-              altitude: 33.5731
-              longitude: -7.5898
+              altitude: 0.0
+              longitude: 0.0
               openTime: "08:00:00"
               closeTime: "18:00:00"
       responses:
