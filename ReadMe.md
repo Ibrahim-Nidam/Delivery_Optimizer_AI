@@ -86,96 +86,120 @@ delivery-optimizer-v2/
 ├── pom.xml
 ├── README.md
 ├── .gitignore
+├── .gitattributes
 │
 ├── src/
-│   ├── main/java/com/deliveryoptimizer/
-│   │   ├── DeliveryOptimizerApplication.java
-│   │   ├── model/
-│   │   │   ├── Customer.java
-│   │   │   ├── Delivery.java
-│   │   │   ├── DeliveryHistory.java
-│   │   │   ├── Tour.java
-│   │   │   ├── Vehicle.java
-│   │   │   ├── Warehouse.java
-│   │   │   └── enums/
-│   │   │       ├── VehicleType.java
-│   │   │       ├── DeliveryStatus.java
-│   │   │       ├── TourStatus.java
-│   │   │       └── OptimizationMethod.java
+│   ├── main/
+│   │   ├── java/com/deliveryoptimizer/
+│   │   │   ├── DeliveryOptimizerApplication.java
+│   │   │   ├── annotation/
+│   │   │   │   └── OptimizerType.java
+│   │   │   ├── config/
+│   │   │   │   ├── AppConfig.java
+│   │   │   │   ├── OpenApiConfig.java
+│   │   │   │   └── OptimizerProperties.java
+│   │   │   ├── controller/
+│   │   │   │   ├── CustomerController.java
+│   │   │   │   ├── DeliveryController.java
+│   │   │   │   ├── DeliveryHistoryController.java
+│   │   │   │   ├── TourController.java
+│   │   │   │   ├── VehicleController.java
+│   │   │   │   └── WarehouseController.java
+│   │   │   ├── dto/
+│   │   │   │   ├── CustomerDTO.java
+│   │   │   │   ├── DeliveryDTO.java
+│   │   │   │   ├── DeliveryHistoryDTO.java
+│   │   │   │   ├── DeliveryHistoryReportDTO.java
+│   │   │   │   ├── VehicleDTO.java
+│   │   │   │   ├── WarehouseDTO.java
+│   │   │   │   └── TourDTO.java
+│   │   │   ├── mapper/
+│   │   │   │   ├── CustomerMapper.java
+│   │   │   │   ├── DeliveryMapper.java
+│   │   │   │   ├── DeliveryHistoryMapper.java
+│   │   │   │   ├── TourMapper.java
+│   │   │   │   ├── VehicleMapper.java
+│   │   │   │   └── WarehouseMapper.java
+│   │   │   ├── model/
+│   │   │   │   ├── Customer.java
+│   │   │   │   ├── Delivery.java
+│   │   │   │   ├── DeliveryHistory.java
+│   │   │   │   ├── Tour.java
+│   │   │   │   ├── Vehicle.java
+│   │   │   │   ├── Warehouse.java
+│   │   │   │   └── enums/
+│   │   │   │       ├── DeliveryStatus.java
+│   │   │   │       ├── TourStatus.java
+│   │   │   │       └── VehicleType.java
+│   │   │   ├── repository/
+│   │   │   │   ├── CustomerRepository.java
+│   │   │   │   ├── DeliveryRepository.java
+│   │   │   │   ├── DeliveryHistoryRepository.java
+│   │   │   │   ├── TourRepository.java
+│   │   │   │   ├── VehicleRepository.java
+│   │   │   │   └── WarehouseRepository.java
+│   │   │   ├── service/
+│   │   │   │   ├── factory/
+│   │   │   │   │   └── OptimizerFactory.java
+│   │   │   │   ├── impl/
+│   │   │   │   │   ├── AIOptimizer.java
+│   │   │   │   │   ├── ClarkeWrightOptimizer.java
+│   │   │   │   │   ├── NearestNeighborOptimizer.java
+│   │   │   │   │   ├── CustomerServiceImpl.java
+│   │   │   │   │   ├── DeliveryServiceImpl.java
+│   │   │   │   │   ├── DeliveryHistoryServiceImpl.java
+│   │   │   │   │   ├── TourServiceImpl.java
+│   │   │   │   │   ├── VehicleServiceImpl.java
+│   │   │   │   │   └── WarehouseServiceImpl.java
+│   │   │   │   └── interfaces/
+│   │   │   │       ├── CustomerService.java
+│   │   │   │       ├── DeliveryService.java
+│   │   │   │       ├── DeliveryHistoryService.java
+│   │   │   │       ├── TourService.java
+│   │   │   │       ├── VehicleService.java
+│   │   │   │       ├── WarehouseService.java
+│   │   │   │       └── TourOptimizer.java
+│   │   │   ├── util/
+│   │   │   │   ├── DistanceCalculator.java
+│   │   │   │   ├── TourUtils.java
+│   │   │   │   └── AIModelHelper.java
+│   │   │   └── ServletInitializer.java
 │   │   │
-│   │   ├── dto/
-│   │   │   ├── CustomerDTO.java
-│   │   │   ├── DeliveryDTO.java
-│   │   │   ├── DeliveryHistoryDTO.java
-│   │   │   ├── VehicleDTO.java
-│   │   │   ├── WarehouseDTO.java
-│   │   │   └── TourDTO.java
-│   │   │
-│   │   ├── mapper/
-│   │   │   ├── CustomerMapper.java
-│   │   │   ├── DeliveryMapper.java
-│   │   │   ├── DeliveryHistoryMapper.java
-│   │   │   ├── TourMapper.java
-│   │   │   ├── VehicleMapper.java
-│   │   │   └── WarehouseMapper.java
-│   │   │
-│   │   ├── repository/
-│   │   │   ├── CustomerRepository.java
-│   │   │   ├── DeliveryRepository.java
-│   │   │   ├── DeliveryHistoryRepository.java
-│   │   │   ├── VehicleRepository.java
-│   │   │   ├── WarehouseRepository.java
-│   │   │   └── TourRepository.java
-│   │   │
-│   │   ├── service/
-│   │   │   ├── interfaces/
-│   │   │   │   ├── TourService.java
-│   │   │   │   ├── VehicleService.java
-│   │   │   │   ├── DeliveryService.java
-│   │   │   │   ├── CustomerService.java
-│   │   │   │   ├── WarehouseService.java
-│   │   │   │   └── TourOptimizer.java
-│   │   │   │
-│   │   │   ├── impl/
-│   │   │   │   ├── NearestNeighborOptimizer.java
-│   │   │   │   ├── ClarkeWrightOptimizer.java
-│   │   │   │   ├── AIBasedOptimizer.java
-│   │   │   │   ├── OptimizerFactory.java
-│   │   │   │   ├── TourServiceImpl.java
-│   │   │   │   ├── VehicleServiceImpl.java
-│   │   │   │   ├── DeliveryServiceImpl.java
-│   │   │   │   ├── CustomerServiceImpl.java
-│   │   │   │   └── WarehouseServiceImpl.java
-│   │   │
-│   │   ├── controller/
-│   │   │   ├── CustomerController.java
-│   │   │   ├── DeliveryController.java
-│   │   │   ├── VehicleController.java
-│   │   │   ├── WarehouseController.java
-│   │   │   └── TourController.java
-│   │   │
-│   │   └── util/
-│   │       ├── DistanceCalculator.java
-│   │       ├── TourUtils.java
-│   │       └── AIModelHelper.java
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       ├── application-dev.yml
+│   │       ├── application-qa.yml
+│   │       ├── logback.xml
+│   │       ├── db/
+│   │       │   └── changelog/
+│   │       │       ├── db.changelog-master.xml
+│   │       │       ├── db.changelog-v1.0-initial.xml
+│   │       │       └── db.changelog-v2.0-new-entities.xml
+│   │       └── static/
+│   │           ├── customers.yaml
+│   │           ├── deliveries.yaml
+│   │           ├── deliveryHistory.yaml
+│   │           ├── tours.yaml
+│   │           ├── vehicles.yaml
+│   │           ├── warehouses.yaml
+│   │           └── openapi.yaml
 │   │
-│   └── resources/
-│       ├── db/changelog/db.changelog-master.yml
-│       ├── application.yml
-│       ├── application-dev.yml
-│       ├── application-qa.yml
-│       ├── logback.xml
-│       └── openapi/
-│           ├── tours.yaml
-│           ├── deliveries.yaml
-│           ├── vehicles.yaml
-│           ├── warehouses.yaml
-│           └── customers.yaml
+│   └── test/java/com/deliveryoptimizer/
+│       ├── DeliveryOptimizerApplicationTests.java
+│       ├── service/ClarkeWrightOptimizerTest.java
+│       ├── service/NearestNeighborOptimizerTest.java
+│       └── util/DistanceCalculatorTest.java
 │
-└── docs/
-    ├── Delivery_Optimizer_V2.png
-    ├── api-collection.json
-    └── swagger_screenshots/
+├── docs/
+│   ├── Delivery_Optimizer_AI.png
+│   ├── api-collection.json
+│   └── swagger_screenshots/
+│       ├── swagger.png
+│       └── Endpoints.png
+│
+└── logs/
+    └── app.log
+
 ```
 
 ---
@@ -222,6 +246,16 @@ All implement `TourOptimizer`.
 ![UML Diagram](docs/Delivery_Optimizer_AI.png)
 
 ---
+
+## 📸 Application ScreenShots
+
+![UML Diagram](docs/swagger.png)
+
+
+![UML Diagram](docs/swagger%20Endpoints.png)
+
+---
+
 
 ## 🧪 Run & Test
 
