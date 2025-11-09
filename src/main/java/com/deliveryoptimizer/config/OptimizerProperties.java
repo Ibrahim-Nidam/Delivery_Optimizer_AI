@@ -10,11 +10,5 @@ import org.springframework.stereotype.Component;
 public class OptimizerProperties {
     private String type; // NN, CW, AI
     private String provider; // local, api (for AI optimizer)
-    private OllamaConfig ollama;
 
-    @Data
-    public static class OllamaConfig {
-        private String baseUrl;
-        private String model;
-    }
 }
