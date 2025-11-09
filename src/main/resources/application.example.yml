@@ -12,6 +12,10 @@ spring:
     file:
       name: logs/delivery-optimizer.log
 
+  jpa:
+    hibernate:
+      ddl-auto: none
+
 server:
   port: 8081
 
@@ -22,12 +26,16 @@ liquibase:
 springdoc:
   api-docs:
     enabled: true
-    path: /openapi.yaml
+    path: /v3/api-docs
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+    url: /openapi.yaml
+  packagesToScan: none
+  pathsToMatch: none
 
 ai:
   enabled: true
   optimizer:
-    provider: local
+    type: AI
+    provider: gemini

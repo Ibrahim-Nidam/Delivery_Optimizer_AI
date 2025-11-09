@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:deliverydb;DB_CLOSE_DELAY=-1
-    username: dev_user
-    password: dev_password
+    username: dev_userName
+    password: dev_pass
 
   h2:
     console:
@@ -14,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       show-sql: true
     properties:
       hibernate.format_sql: true
@@ -24,16 +24,13 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
 
+  # Google AI Gemini Configuration (Direct API)
   ai:
-    openai:
-      api-key: API_KEY
-      chat:
-        options:
-          model: gpt-4o-mini
+    gemini:
+      api-key: ${GEMINI_API_KEY:YOUR_API_KEY}
+      model: gemini-2.5-flash
 
 ai:
+  enabled: true
   optimizer:
-    provider: local
-    ollama:
-      base-url: http://localhost:11434
-      model: tinyllama
+    provider: gemini  # "gemini" for Google Gemini
